@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeSignal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f8fa;--white:#fff;--border:#e4e7ec;--border2:#d0d5dd;--text:#101828;--text2:#344054;--muted:#667085;--muted2:#98a2b3;--green:#039855;--green-bg:#ecfdf3;--green-light:#d1fadf;--red:#d92d20;--red-bg:#fef3f2;--red-light:#fee4e2;--orange:#b54708;--orange-bg:#fffaeb;--blue:#1d4ed8;--blue-bg:#eff6ff;--accent:#2563eb;--accent2:#1d4ed8;--sh1:0 1px 3px rgba(16,24,40,.1),0 1px 2px rgba(16,24,40,.06);--sh2:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);--sh3:0 12px 24px -4px rgba(16,24,40,.12),0 4px 8px -2px rgba(16,24,40,.08);--rs:6px;--rl:14px}
+.dark{--bg:#0f1117;--white:#1a1d27;--border:#2a2d3a;--border2:#373a4d;--text:#e8eaf0;--text2:#c1c5d6;--muted:#6b7280;--muted2:#4b5563;--green:#10b981;--green-bg:rgba(16,185,129,.12);--green-light:rgba(16,185,129,.25);--red:#f87171;--red-bg:rgba(248,113,113,.1);--red-light:rgba(248,113,113,.2);--orange:#f59e0b;--orange-bg:rgba(245,158,11,.1);--blue:#60a5fa;--blue-bg:rgba(96,165,250,.1);--accent:#3b82f6;--accent2:#2563eb;--sh1:0 1px 3px rgba(0,0,0,.4);--sh2:0 4px 8px rgba(0,0,0,.4);--sh3:0 12px 32px rgba(0,0,0,.5)}
+.theme-btn{background:none;border:1px solid var(--border);color:var(--text2);width:34px;height:34px;border-radius:var(--rs);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.theme-btn:hover{background:var(--bg);border-color:var(--border2)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+header{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;box-shadow:var(--sh1)}
+.logo{font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:800}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.trader-badge{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--bg);border:1px solid var(--border);border-radius:20px;font-size:.82rem;font-weight:500;cursor:pointer}
+.t-avatar{width:22px;height:22px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700;flex-shrink:0}
+.btn-ghost{background:none;border:1px solid var(--border);color:var(--text2);padding:7px 14px;border-radius:var(--rs);cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;transition:all .15s}
+.btn-ghost:hover{background:var(--bg)}
+main{max-width:840px;margin:0 auto;padding:32px 24px 80px}
+.name-overlay{position:fixed;inset:0;background:rgba(16,24,40,.6);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center}
+.name-modal{background:var(--white);border-radius:var(--rl);padding:36px;width:420px;max-width:92vw;box-shadow:var(--sh3);animation:fU .2s ease}
+.name-modal h2{font-size:1.2rem;font-weight:700;margin-bottom:6px}
+.name-modal p{color:var(--muted);font-size:.85rem;margin-bottom:20px}
+@keyframes fU{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.tabs-row{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;cursor:pointer;font-size:.875rem;font-weight:500;color:var(--muted);border:none;background:none;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:6px;transition:all .15s}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.tab-badge{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:28px;box-shadow:var(--sh1);display:none}
+.card.active{display:block}
+.slabel{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.slabel:first-child{margin-top:0;padding-top:0;border-top:none}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg1{grid-template-columns:1fr}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:.78rem;font-weight:500;color:var(--text2)}
+.iw{position:relative}
+.ipfx{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:.85rem;pointer-events:none}
+input,select,textarea{background:var(--white);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-family:'Inter',sans-serif;font-size:.875rem;padding:9px 12px;transition:border-color .15s,box-shadow .15s;outline:none;width:100%}
+input.pfx{padding-left:26px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input::placeholder{color:var(--muted2)}
+textarea{resize:vertical;min-height:80px}
+.pair-ldr{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace;pointer-events:none}
+.pair-hint{font-size:.75rem;font-family:'JetBrains Mono',monospace;margin-top:3px;height:16px}
+.dir-tgl{display:grid;grid-template-columns:1fr 1fr;border-radius:var(--rs);overflow:hidden;border:1px solid var(--border2)}
+.dir-btn{padding:9px;text-align:center;cursor:pointer;font-weight:600;font-size:.82rem;background:var(--white);color:var(--muted);border:none;font-family:'Inter',sans-serif;letter-spacing:.04em;transition:all .15s}
+.dir-btn.la{background:var(--green-bg);color:var(--green)}
+.dir-btn.sa{background:var(--red-bg);color:var(--red)}
+.dir-btn.oa{background:var(--blue-bg);color:var(--blue)}
+.r-disp{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:.875rem;min-height:38px;display:flex;align-items:center}
+.tp-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.tp-row{display:flex;gap:8px;align-items:center}
+.tp-row input{flex:1}
+.tp-lbl{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted);width:28px;flex-shrink:0;text-align:right}
+.btn-rm{width:30px;height:30px;border:1px solid var(--border);background:none;border-radius:var(--rs);cursor:pointer;color:var(--muted2);font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.btn-rm:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+.btn-add-tp{background:none;border:1px dashed var(--border2);color:var(--muted);padding:7px 14px;border-radius:var(--rs);cursor:pointer;font-size:.8rem;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-add-tp:hover{border-color:var(--accent);color:var(--accent)}
+.pos-box{background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:var(--rs);padding:12px 16px;margin-top:8px}
+.pos-box .pt{font-size:.72rem;font-weight:600;color:var(--blue);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.pos-box .pv{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--text)}
+.sub-row{display:flex;align-items:center;gap:14px;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.btn-primary{background:var(--accent);color:#fff;border:none;padding:10px 22px;border-radius:var(--rs);font-weight:600;font-size:.875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;display:flex;align-items:center;gap:8px}
+.btn-primary:hover{background:var(--accent2);box-shadow:var(--sh2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+.stxt{font-size:.82rem;color:var(--muted)}
+.stxt.ok{color:var(--green)}
+.stxt.err{color:var(--red)}
+.tc{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:12px;box-shadow:var(--sh1);animation:fU .25s ease;transition:box-shadow .15s}
+.tc:hover{box-shadow:var(--sh2)}
+.tc.lb{border-left:3px solid var(--green)}
+.tc.sb{border-left:3px solid var(--red)}
+.tc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.tc-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1rem}
+.pill{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
+.pl{background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)}
+.ps{background:var(--red-bg);color:var(--red);border:1px solid var(--red-light)}
+.pm{background:var(--orange-bg);color:var(--orange);border:1px solid #fde68a}
+.plv{background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)}
+.tc-lvls{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.lv-item{display:flex;flex-direction:column;gap:1px}
+.lv-lbl{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2)}
+.lv-val{font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:500}
+.ec{color:var(--orange)}
+.sc{color:var(--red)}
+.tc-tps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tpc{font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:3px 9px;border-radius:5px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-light);transition:all .2s}
+.tpc.hit{background:#f9fafb;color:var(--muted2);border-color:var(--border);text-decoration:line-through}
+.tc-bot{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.live-row{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pu 2s infinite;flex-shrink:0}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+.pnl{padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600}
+.pnl.u{background:var(--green-bg);color:var(--green)}
+.pnl.d{background:var(--red-bg);color:var(--red)}
+.tc-act{display:flex;gap:6px;align-items:center}
+.btn-ct{background:none;border:1px solid var(--border2);color:var(--red);padding:5px 12px;border-radius:var(--rs);cursor:pointer;font-size:.78rem;font-weight:500;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-ct:hover{background:var(--red-bg);border-color:var(--red)}
+.btn-edit{background:none;border:1px solid var(--border2);color:var(--accent);padding:5px 12px;border-radius:var(--rs);cursor:pointer;font-size:.78rem;font-weight:500;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-edit:hover{background:var(--blue-bg);border-color:var(--accent)}
+.t-tag{font-size:.75rem;color:var(--muted)}
+.log-tbl{width:100%;border-collapse:collapse}
+.log-tbl th{text-align:left;font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:8px 12px;border-bottom:1px solid var(--border)}
+.log-tbl td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle}
+.log-tbl tr:last-child td{border-bottom:none}
+.log-tbl tr:hover td{background:var(--bg)}
+.lr{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
+.lr.p{color:var(--green)}
+.lr.n{color:var(--red)}
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.ei{font-size:2.2rem;margin-bottom:10px}
+.empty p{font-size:.85rem;line-height:1.6}
+.mo{display:none;position:fixed;inset:0;background:rgba(16,24,40,.5);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.modal{background:var(--white);border-radius:var(--rl);padding:32px;width:480px;max-width:94vw;box-shadow:var(--sh3);animation:fU .2s ease}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.mh h3{font-size:1rem;font-weight:700}
+.btn-x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:4px;transition:background .15s}
+.btn-x:hover{background:var(--bg)}
+.mnote{font-size:.78rem;color:var(--muted);margin-top:10px;line-height:1.6;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px}
+.ma{display:flex;gap:8px;margin-top:20px}
+.btn-sec{background:var(--white);border:1px solid var(--border2);color:var(--text2);padding:9px 18px;border-radius:var(--rs);font-weight:500;font-size:.875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-sec:hover{background:var(--bg)}
+.ci-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;margin-bottom:16px}
+.ci-row{display:flex;justify-content:space-between;font-size:.82rem;padding:3px 0}
+.ci-row span:first-child{color:var(--muted)}
+.ci-row span:last-child{font-family:'JetBrains Mono',monospace;font-weight:500}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 16px;flex:1;min-width:100px}
+.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.stat-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem}
+.wh-saved-badge{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;margin-top:8px;color:var(--green);font-family:'JetBrains Mono',monospace}
+.wh-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+@media(max-width:600px){header{padding:0 16px}main{padding:20px 14px 60px}.fg{grid-template-columns:1fr}.fg3{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAME OVERLAY -->
+<div class="name-overlay" id="name-overlay">
+  <div class="name-modal">
+    <h2>👋 Welcome to TradeSignal</h2>
+    <p>Enter your name and Discord webhook URL. This is saved per name so you only need to do this once.</p>
+    <div class="field" style="margin-bottom:12px">
+      <label>Your name</label>
+      <input type="text" id="name-input" placeholder="e.g. Alex" maxlength="30">
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Trades Webhook (new trade signals)</label>
+      <input type="text" id="name-wh-trades" placeholder="https://discord.com/api/webhooks/...">
+    </div>
+    <div class="field" style="margin-bottom:20px">
+      <label>Updates Webhook (entry/TP/SL alerts)</label>
+      <input type="text" id="name-wh-updates" placeholder="https://discord.com/api/webhooks/...">
+      <span style="font-size:.75rem;color:var(--muted);margin-top:4px">Can be the same as Trades Webhook or a different channel.</span>
+    </div>
+    <button class="btn-primary" onclick="saveName()" style="width:100%;justify-content:center">Continue →</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo"><div class="logo-mark">TS</div>TradeSignal</div>
+  <div class="hdr-r">
+    <div class="trader-badge" id="trader-badge" style="display:none" onclick="openNameModal()" title="Click to edit">
+      <div class="t-avatar" id="t-avatar">?</div>
+      <span id="t-name">–</span>
+    </div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+    <button class="btn-ghost" onclick="openSettings()">⚙ Settings</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="tabs-row">
+    <button class="tab active" onclick="sw('new')" id="tbtn-new">Take Trade</button>
+    <button class="tab" onclick="sw('active')" id="tbtn-active">Active Trades <span class="tab-badge" id="abadge" style="display:none">0</span></button>
+    <button class="tab" onclick="sw('log')" id="tbtn-log">Log</button>
+  </div>
+
+  <!-- NEW TRADE -->
+  <div class="card active" id="tab-new">
+    <div class="slabel">Market</div>
+    <div class="fg">
+      <div class="field">
+        <label>Trading Pair</label>
+        <div class="iw">
+          <input type="text" id="pair" placeholder="BTC" oninput="onPairInput(this)" onblur="finalizePair(this)" autocomplete="off">
+          <span class="pair-ldr" id="pair-ldr"></span>
+        </div>
+        <div class="pair-hint" id="pair-hint"></div>
+      </div>
+      <div class="field">
+        <label>Market Type</label>
+        <select id="mtype">
+          <option value="Futures">Futures</option>
+          <option value="Spot">Spot</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg" style="margin-top:14px">
+      <div class="field">
+        <label>Direction</label>
+        <div class="dir-tgl">
+          <button class="dir-btn la" id="btn-long" onclick="setDir('long')">LONG</button>
+          <button class="dir-btn" id="btn-short" onclick="setDir('short')">SHORT</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Order Type</label>
+        <div class="dir-tgl">
+          <button class="dir-btn" id="btn-limit" onclick="setOrderType('limit')" style="background:var(--blue-bg);color:var(--blue)">Limit</button>
+          <button class="dir-btn" id="btn-market" onclick="setOrderType('market')">Market</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slabel">Trade Levels</div>
+    <div class="fg">
+      <div class="field">
+        <label>Entry Price ($)</label>
+        <div class="iw"><span class="ipfx">$</span><input type="number" id="entry" class="pfx" placeholder="63100" step="any" oninput="recalc()"></div>
+        <span id="entry-type-hint" style="font-size:.72rem;color:var(--muted);margin-top:3px">(limit — set your desired entry)</span>
+      </div>
+      <div class="field">
+        <label>Stop Loss ($) <span style="color:var(--red)">*</span></label>
+        <div class="iw"><span class="ipfx">$</span><input type="number" id="stoploss" class="pfx" placeholder="62100" step="any" oninput="validateSL();recalc()"></div>
+        <span id="sl-err" style="font-size:.75rem;color:var(--red);display:none"></span>
+      </div>
+    </div>
+
+    <div class="slabel">Take Profit Levels <span style="color:var(--red);font-size:.65rem;font-weight:400;letter-spacing:0">* at least one required</span></div>
+    <div class="tp-list" id="tp-list"></div>
+    <span id="tp-err" style="font-size:.75rem;color:var(--red);display:none;margin-top:4px"></span>
+    <button class="btn-add-tp" onclick="addTP()" style="margin-top:8px">+ Add Take Profit</button>
+
+    <div class="slabel">R-multiple</div>
+    <div class="field" style="max-width:240px">
+      <div class="r-disp" id="r-disp"><span style="color:var(--muted2)">–</span></div>
+    </div>
+
+    <div class="slabel">Setup Details</div>
+    <div class="fg fg1" style="margin-bottom:14px">
+      <div class="field">
+        <textarea id="reason" placeholder="Describe the technical or fundamental reason for this setup..."></textarea>
+      </div>
+    </div>
+    <div class="fg fg1">
+      <div class="field">
+        <label>TradingView Chart Link (optional)</label>
+        <input type="url" id="tvlink" placeholder="https://www.tradingview.com/chart/...">
+        <span id="tv-err" style="font-size:.75rem;color:var(--red);display:none">⚠ Only TradingView links are allowed.</span>
+      </div>
+    </div>
+
+    <div class="sub-row">
+      <button class="btn-primary" id="sub-btn" onclick="submitTrade()">📡 Post to Discord</button>
+      <span class="stxt" id="smsg"></span>
+    </div>
+  </div>
+
+  <!-- ACTIVE TRADES -->
+  <div class="card" id="tab-active">
+    <div id="trades-list">
+      <div class="empty"><div class="ei">📭</div><p>No active trades.<br>Post your first signal via "Take Trade".</p></div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="card" id="tab-log">
+    <div id="log-content">
+      <div class="empty"><div class="ei">📋</div><p>No closed trades yet.</p></div>
+    </div>
+  </div>
+</main>
+
+<!-- SETTINGS MODAL -->
+<div class="mo" id="settings-modal">
+  <div class="modal">
+    <div class="mh"><h3>⚙ Settings</h3><button class="btn-x" onclick="closeSettings()">✕</button></div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Trades Webhook (new trades)</label>
+      <input type="text" id="wh-trades" placeholder="https://discord.com/api/webhooks/...">
+      <span style="font-size:.72rem;color:var(--muted);margin-top:3px">Posts new trade signals to this channel.</span>
+    </div>
+    <div class="field" style="margin-bottom:8px">
+      <label>Updates Webhook (entry/TP/SL alerts)</label>
+      <input type="text" id="wh-updates" placeholder="https://discord.com/api/webhooks/...">
+      <span style="font-size:.72rem;color:var(--muted);margin-top:3px">Posts entry hit, TP hit, SL hit, and close notifications.</span>
+    </div>
+    <div id="wh-status"></div>
+    <div class="mnote">In Discord: Channel Settings → Integrations → Webhooks → New Webhook → Copy URL.<br>Webhooks are saved per trader name. You can use the same URL for both channels.</div>
+    <div class="ma">
+      <button class="btn-primary" onclick="saveWebhook()">Save</button>
+      <button class="btn-sec" onclick="testWebhooks()">Test Both</button>
+      <button class="btn-sec" onclick="closeSettings()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSE TRADE MODAL -->
+<div class="mo" id="close-modal">
+  <div class="modal">
+    <div class="mh"><h3>Close Trade</h3><button class="btn-x" onclick="closeCM()">✕</button></div>
+    <div class="ci-box" id="ci-info"></div>
+    <div class="field">
+      <label>Closing Price</label>
+      <div class="iw">
+        <span class="ipfx">$</span>
+        <input type="number" id="close-price" class="pfx" placeholder="Fetching live price…" step="any" readonly style="background:var(--bg);cursor:default">
+      </div>
+      <span id="cp-status" style="font-size:.75rem;color:var(--muted);margin-top:4px;display:block"></span>
+    </div>
+    <div class="ma" style="margin-top:20px">
+      <button class="btn-primary" onclick="confirmClose()">Close</button>
+      <button class="btn-sec" onclick="closeCM()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TRADE MODAL -->
+<div class="mo" id="edit-modal">
+  <div class="modal">
+    <div class="mh"><h3>✏️ Edit Trade</h3><button class="btn-x" onclick="closeEditModal()">✕</button></div>
+    <div class="field" id="edit-entry-row" style="margin-bottom:12px;display:none">
+      <label>Entry Price ($) <span style="font-size:.7rem;color:var(--accent);font-weight:400">(pending — editable)</span></label>
+      <div class="iw"><span class="ipfx">$</span><input type="number" id="edit-entry" class="pfx" step="any"></div>
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Stop Loss ($)</label>
+      <div class="iw"><span class="ipfx">$</span><input type="number" id="edit-sl" class="pfx" step="any"></div>
+    </div>
+    <div id="edit-tp-list" style="margin-bottom:12px"></div>
+    <button class="btn-add-tp" onclick="addEditTP()" style="margin-bottom:16px">+ Add Take Profit</button>
+    <div class="ma">
+      <button class="btn-primary" onclick="confirmEdit()">Update</button>
+      <button class="btn-sec" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONSTANTS ───────────────────────────────────────────
+var DEFAULT_WH_TRADES  = 'https://discord.com/api/webhooks/1506363422252732607/-OMcoZp9biRaKO-CdVZ2b7WbjWx2fthH3I1WfC2MaCm_-gmXH9Lwt9Mih2hzFo2tJSiC';
+var DEFAULT_WH_UPDATES = 'https://discord.com/api/webhooks/1506363422252732607/-OMcoZp9biRaKO-CdVZ2b7WbjWx2fthH3I1WfC2MaCm_-gmXH9Lwt9Mih2hzFo2tJSiC';
+
+// ─── STATE ───────────────────────────────────────────────
+var dir = 'long';
+var orderType = 'limit'; // 'limit' or 'market'
+var trades = JSON.parse(localStorage.getItem('ts_trades') || '[]');
+var itvs = {};
+var tpN = 0;
+var closingId = null;
+var editingId = null;
+var editTpN = 0;
+var pairTmr = null;
+
+// ─── WEBHOOK HELPERS ─────────────────────────────────────
+function getWH(name, type) {
+  // type = 'trades' or 'updates'
+  return localStorage.getItem('ts_wh_'+type+'_'+(name||'').toLowerCase()) || '';
+}
+function setWH(name, type, url) {
+  localStorage.setItem('ts_wh_'+type+'_'+(name||'').toLowerCase(), url);
+}
+function currentWH(type) {
+  var name = localStorage.getItem('ts_name') || '';
+  return getWH(name, type) || (type==='trades' ? DEFAULT_WH_TRADES : DEFAULT_WH_UPDATES);
+}
+
+// ─── INIT ────────────────────────────────────────────────
+function init() {
+  var name = localStorage.getItem('ts_name');
+  if (!name) {
+    document.getElementById('name-wh-trades').value  = DEFAULT_WH_TRADES;
+    document.getElementById('name-wh-updates').value = DEFAULT_WH_UPDATES;
+    document.getElementById('name-overlay').style.display = 'flex';
+  } else {
+    setNameUI(name);
+    if (!getWH(name,'trades'))  setWH(name,'trades',  DEFAULT_WH_TRADES);
+    if (!getWH(name,'updates')) setWH(name,'updates', DEFAULT_WH_UPDATES);
+  }
+  addTP();
+  setOrderType('limit');
+  updBadge();
+  trades.filter(function(t){return!t.closed}).forEach(function(t){startMon(t.id)});
+}
+
+function saveName() {
+  var v  = document.getElementById('name-input').value.trim();
+  var wt = document.getElementById('name-wh-trades').value.trim()  || DEFAULT_WH_TRADES;
+  var wu = document.getElementById('name-wh-updates').value.trim() || DEFAULT_WH_UPDATES;
+  if (!v) { document.getElementById('name-input').focus(); return; }
+  localStorage.setItem('ts_name', v);
+  setWH(v,'trades',  wt);
+  setWH(v,'updates', wu);
+  document.getElementById('name-overlay').style.display = 'none';
+  setNameUI(v);
+}
+
+function openNameModal() {
+  var name = localStorage.getItem('ts_name') || '';
+  document.getElementById('name-input').value      = name;
+  document.getElementById('name-wh-trades').value  = getWH(name,'trades')  || DEFAULT_WH_TRADES;
+  document.getElementById('name-wh-updates').value = getWH(name,'updates') || DEFAULT_WH_UPDATES;
+  document.getElementById('name-overlay').style.display = 'flex';
+}
+
+function setNameUI(name) {
+  document.getElementById('t-name').textContent = name;
+  document.getElementById('t-avatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('trader-badge').style.display = 'flex';
+}
+
+// ─── PAIR INPUT ──────────────────────────────────────────
+function onPairInput(el) {
+  el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  clearTimeout(pairTmr);
+  document.getElementById('pair-hint').textContent = '';
+  document.getElementById('pair-ldr').textContent = '';
+  if (el.value.length < 2) return;
+  pairTmr = setTimeout(function(){ tryPrefill(el.value); }, 600);
+}
+
+function finalizePair(el) {
+  el.value = el.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');
+}
+
+function getFullPair(raw) {
+  var v = (raw||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');
+  return v ? v+'/USDT' : null;
+}
+
+async function tryPrefill(raw) {
+  var pair = getFullPair(raw); if (!pair) return;
+  document.getElementById('pair-ldr').textContent = '…';
+  var p = await fetchPrice(pair);
+  document.getElementById('pair-ldr').textContent = '';
+  var h = document.getElementById('pair-hint');
+  if (p) {
+    h.style.color = 'var(--green)';
+    h.textContent = '✓ ' + pair + ' — $' + p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:6})+' (Bybit)';
+    var e = document.getElementById('entry');
+    e.value = p; recalc();
+  } else {
+    h.style.color = 'var(--red)';
+    h.textContent = '✗ Not found on Bybit';
+  }
+}
+
+// ─── DIRECTION ───────────────────────────────────────────
+function setDir(d) {
+  dir = d;
+  document.getElementById('btn-long').className = 'dir-btn' + (d==='long' ? ' la' : '');
+  document.getElementById('btn-short').className = 'dir-btn' + (d==='short' ? ' sa' : '');
+  validateSL(); validateTPs(); recalc();
+}
+
+function setOrderType(ot) {
+  orderType = ot;
+  document.getElementById('btn-limit').className  = 'dir-btn' + (ot==='limit'  ? ' oa' : '');
+  document.getElementById('btn-market').className = 'dir-btn' + (ot==='market' ? ' oa' : '');
+  // Update entry label hint
+  var entryLabel = document.querySelector('label[for-entry]') || null;
+  var hint = document.getElementById('entry-type-hint');
+  if(hint) hint.textContent = ot==='market' ? '(market price — auto-filled)' : '(limit — set your desired entry)';
+}
+
+// ─── TAKE PROFITS (new trade form) ──────────────────────
+function addTP() {
+  tpN++;
+  var n = tpN, list = document.getElementById('tp-list');
+  var row = document.createElement('div'); row.className = 'tp-row'; row.id = 'tpr-'+n;
+  row.innerHTML = '<span class="tp-lbl">TP'+(list.children.length+1)+'</span>'
+    +'<div class="iw" style="flex:1"><span class="ipfx">$</span>'
+    +'<input type="number" id="tp-'+n+'" class="pfx" placeholder="Price" step="any" oninput="validateTPs();recalc()"></div>'
+    +'<button class="btn-rm" onclick="removeTP('+n+')">✕</button>';
+  list.appendChild(row); renum('tp-list');
+}
+
+function removeTP(n) {
+  var r = document.getElementById('tpr-'+n); if(r){r.remove(); renum('tp-list'); recalc();}
+}
+
+function renum(listId) {
+  document.querySelectorAll('#'+listId+' .tp-row').forEach(function(r,i){
+    var l=r.querySelector('.tp-lbl'); if(l) l.textContent='TP'+(i+1);
+  });
+}
+
+function getTPs(listId) {
+  listId = listId || 'tp-list';
+  return Array.from(document.querySelectorAll('#'+listId+' input'))
+    .map(function(i){return parseFloat(i.value)}).filter(function(v){return!isNaN(v)&&v>0});
+}
+
+// ─── EDIT MODAL TPs ──────────────────────────────────────
+function addEditTP(val) {
+  editTpN++;
+  var n = editTpN, list = document.getElementById('edit-tp-list');
+  var row = document.createElement('div'); row.className = 'tp-row'; row.id = 'etpr-'+n;
+  row.innerHTML = '<span class="tp-lbl">TP'+(list.children.length+1)+'</span>'
+    +'<div class="iw" style="flex:1"><span class="ipfx">$</span>'
+    +'<input type="number" id="etp-'+n+'" class="pfx" placeholder="Price" step="any" value="'+(val||'')+'"></div>'
+    +'<button class="btn-rm" onclick="removeEditTP('+n+')">✕</button>';
+  list.appendChild(row); renum('edit-tp-list');
+}
+
+function removeEditTP(n) {
+  var r = document.getElementById('etpr-'+n); if(r){r.remove(); renum('edit-tp-list');}
+}
+
+// ─── VALIDATION ──────────────────────────────────────────
+function validateSL() {
+  var e = parseFloat(document.getElementById('entry').value);
+  var sl = parseFloat(document.getElementById('stoploss').value);
+  var errEl = document.getElementById('sl-err');
+  var slEl = document.getElementById('stoploss');
+  if (!isNaN(e) && !isNaN(sl)) {
+    if (dir === 'long' && sl >= e) {
+      errEl.textContent = '⚠ Stop loss must be below entry for a LONG trade.';
+      errEl.style.display = 'block';
+      slEl.style.borderColor = 'var(--red)';
+      return false;
+    }
+    if (dir === 'short' && sl <= e) {
+      errEl.textContent = '⚠ Stop loss must be above entry for a SHORT trade.';
+      errEl.style.display = 'block';
+      slEl.style.borderColor = 'var(--red)';
+      return false;
+    }
+  }
+  errEl.style.display = 'none';
+  slEl.style.borderColor = '';
+  return true;
+}
+
+function validateTPs() {
+  var e = parseFloat(document.getElementById('entry').value);
+  var errEl = document.getElementById('tp-err');
+  if (isNaN(e)) { errEl.style.display = 'none'; return true; }
+  var inputs = document.querySelectorAll('#tp-list input');
+  var hasError = false;
+  inputs.forEach(function(inp) {
+    var v = parseFloat(inp.value);
+    if (!isNaN(v)) {
+      var bad = (dir === 'long' && v <= e) || (dir === 'short' && v >= e);
+      inp.style.borderColor = bad ? 'var(--red)' : '';
+      if (bad) hasError = true;
+    } else {
+      inp.style.borderColor = '';
+    }
+  });
+  if (hasError) {
+    errEl.textContent = dir === 'long'
+      ? '⚠ Take profit must be above entry for a LONG trade.'
+      : '⚠ Take profit must be below entry for a SHORT trade.';
+    errEl.style.display = 'block';
+    return false;
+  }
+  errEl.style.display = 'none';
+  return true;
+}
+
+function recalc() {
+  var e=parseFloat(document.getElementById('entry').value);
+  var sl=parseFloat(document.getElementById('stoploss').value);
+  var tps=getTPs();
+  var rd=document.getElementById('r-disp');
+  if(!e||!sl||isNaN(e)||isNaN(sl)){rd.innerHTML='<span style="color:var(--muted2)">–</span>';return;}
+  var rpu=Math.abs(e-sl); if(!rpu) return;
+  if(tps.length>0){
+    var best=dir==='long'?Math.max.apply(null,tps):Math.min.apply(null,tps);
+    var r=(Math.abs(best-e)/rpu).toFixed(2);
+    var col=parseFloat(r)>=2?'var(--green)':parseFloat(r)>=1?'var(--orange)':'var(--red)';
+    rd.innerHTML='<span style="font-weight:700;color:'+col+'">'+r+'R</span>';
+  } else { rd.innerHTML='<span style="color:var(--muted2)">Add TP first</span>'; }
+}
+
+// ─── DISCORD MESSAGE BUILDER ─────────────────────────────
+function buildMsg(t) {
+  var rpu=Math.abs(t.entry-t.stoploss), qty=(100/rpu).toFixed(2);
+  var isLimit = t.orderType === 'limit';
+  var entryEmoji = isLimit ? (t.entryHit ? '☑️' : '⏳') : '☑️';
+  var orderLabel = isLimit ? 'limit' : 'market entry';
+  var tplines=t.takeProfits.map(function(tp,i){
+    var hit = t.tpHit && t.tpHit[i];
+    return '* Take profit '+(i+1)+': $`'+fmt(tp)+'`'+(hit?' ✅':'');
+  }).join('\n');
+  var tvLine=t.tvLink?'\n'+t.tvLink:'';
+  return entryEmoji+' **('+orderLabel+') '+t.pair+' '+t.direction+' ('+t.marketType+')**\n'
+    +'Trader: **'+t.traderName+'**\n'
+    +'Reason for setup: '+(t.reason||'–')+'\n\n'
+    +'Trade details:\n\n'
+    +'* Entry: $`'+fmt(t.entry)+'`\n'
+    +tplines+'\n'
+    +'* Stop/loss: $`'+fmt(t.stoploss)+'`\n'
+    +'* Normal risk\n\n'
+    +'Position size info: If you wanted to risk $`100.00` on this trade, then your position size should be `'+qty+'` '+t.pair+'.'
+    +tvLine;
+}
+
+function fmt(n) {
+  return parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:8});
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────
+async function submitTrade() {
+  var rawp=document.getElementById('pair').value.trim(), pair=getFullPair(rawp);
+  if(!pair){setSt('⚠ Enter a trading pair.','err');return;}
+  var e=parseFloat(document.getElementById('entry').value);
+  var sl=parseFloat(document.getElementById('stoploss').value);
+  if(isNaN(e)||isNaN(sl)){setSt('⚠ Fill in entry and stop loss.','err');return;}
+  if(!sl){setSt('⚠ Stop loss is required.','err');return;}
+  var tps=getTPs(); if(!tps.length){setSt('⚠ Add at least one take profit.','err');return;}
+  if(!validateSL()){setSt('⚠ Stop loss is invalid for this direction.','err');return;}
+  if(!validateTPs()){setSt('⚠ One or more take profits are invalid for this direction.','err');return;}
+  var wh=currentWH('trades'); if(!wh){setSt('⚠ Configure webhook first (⚙ Settings).','err');return;}
+  var name=localStorage.getItem('ts_name')||'Unknown';
+  var tvlink=document.getElementById('tvlink').value.trim();
+  if(tvlink && !tvlink.match(/^https?:\/\/(www\.)?tradingview\.com\//)){
+    setSt('⚠ Only TradingView links are allowed.','err');
+    document.getElementById('tv-err').style.display='block';
+    return;
+  }
+  document.getElementById('tv-err').style.display='none';
+  var btn=document.getElementById('sub-btn'); btn.disabled=true; setSt('Sending…','');
+  var t={id:Date.now().toString(),pair:pair,direction:dir,marketType:document.getElementById('mtype').value,
+    orderType:orderType,
+    entry:e,stoploss:sl,takeProfits:tps,
+    reason:document.getElementById('reason').value.trim(),
+    tvLink:tvlink,
+    traderName:name,timestamp:new Date().toISOString(),
+    lastPrice:null,
+    entryHit: orderType==='market', // market orders are already in — entry immediately hit
+    tpHit:[],slHit:false,
+    closed:false,closePrice:null,closeR:null,discordMsgId:null};
+  try {
+    // ?wait=true makes Discord return the message object with an ID
+    var res=await fetch(wh+'?wait=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:buildMsg(t)})});
+    if(res.ok||res.status===204){
+      try { var msgData=await res.json(); if(msgData&&msgData.id) t.discordMsgId=msgData.id; t.discordWHUrl=wh; } catch{}
+      trades.unshift(t);save();startMon(t.id);updBadge();
+      setSt('✓ Trade posted to Discord!','ok');resetForm();
+      setTimeout(function(){sw('active')},1000);
+    } else setSt('✕ Discord error: '+res.status,'err');
+  } catch(ex){setSt('✕ Network error. Check webhook URL.','err');}
+  btn.disabled=false;
+}
+
+function resetForm(){
+  ['pair','entry','stoploss','reason','tvlink'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pair-hint').textContent='';
+  document.getElementById('r-disp').innerHTML='<span style="color:var(--muted2)">–</span>';
+  document.getElementById('sl-err').style.display='none';
+  document.getElementById('tp-err').style.display='none';
+  document.getElementById('tv-err').style.display='none';
+  document.getElementById('stoploss').style.borderColor='';
+  document.getElementById('tp-list').innerHTML='';
+  tpN=0; addTP();
+  setOrderType('limit');
+}
+
+// ─── PRICE FETCH (Bybit) ─────────────────────────────────
+async function fetchPrice(pair) {
+  try {
+    var sym=pair.replace('/','').toUpperCase();
+    var res=await fetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol='+sym);
+    if(res.ok){
+      var d=await res.json();
+      var item=d&&d.result&&d.result.list&&d.result.list[0];
+      if(item&&item.lastPrice) return parseFloat(item.lastPrice);
+    }
+    // fallback: try linear (futures) category
+    var res2=await fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol='+sym);
+    if(res2.ok){
+      var d2=await res2.json();
+      var item2=d2&&d2.result&&d2.result.list&&d2.result.list[0];
+      if(item2&&item2.lastPrice) return parseFloat(item2.lastPrice);
+    }
+    return null;
+  } catch { return null; }
+}
+
+// ─── MONITOR ─────────────────────────────────────────────
+function startMon(id) {
+  if(itvs[id]) clearInterval(itvs[id]);
+  var tick = async function() {
+    var idx=trades.findIndex(function(t){return t.id===id});
+    if(idx===-1||trades[idx].closed){clearInterval(itvs[id]);return;}
+    var t=trades[idx], p=await fetchPrice(t.pair); if(!p) return;
+    trades[idx].lastPrice=p;
+    var isL=t.direction==='long';
+
+    // Only check entry for limit orders
+    if(t.orderType==='limit' && !t.entryHit) {
+      if(isL?p<=t.entry:p>=t.entry){
+        trades[idx].entryHit=true;
+        sendAlert('🟢 **ENTRY HIT** — '+t.pair+' '+t.direction.toUpperCase()+'\nEntry hit at $`'+fmt(t.entry)+'`');
+        // Patch Discord message to swap ⏳ → ☑️
+        var updated = trades[idx];
+        if(updated.discordMsgId && updated.discordWHUrl) {
+          try {
+            await fetch(updated.discordWHUrl+'/messages/'+updated.discordMsgId, {
+              method:'PATCH', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({content:buildMsg(updated)})
+            });
+          } catch{}
+        }
+        // Update card emoji live and swap PENDING → ACTIVE
+        var titleEl=document.getElementById('tc-title-'+t.id);
+        if(titleEl) {
+          titleEl.innerHTML=titleEl.innerHTML.replace('⏳','☑️');
+          titleEl.innerHTML=titleEl.innerHTML.replace(
+            /background:#fefce8[^"]*"[^>]*>PENDING<\/span>/,
+            'background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)">ACTIVE</span>'
+          );
+        }
+      }
+    }
+
+    if(!trades[idx].tpHit) trades[idx].tpHit=[];
+    // Don't check TP/SL until entry is hit
+    if(!trades[idx].entryHit) { save();refreshCard(id,p);return; }
+    var allHit=true;
+    t.takeProfits.forEach(function(tp,i){
+      if(!trades[idx].tpHit[i]){
+        if(isL?p>=tp:p<=tp){
+          trades[idx].tpHit[i]=true;
+          // Mark trade as finalHit so SL can't trigger after
+          trades[idx].finalHit=true;
+          sendAlert('✅ **TP'+(i+1)+' HIT** — '+t.pair+' '+t.direction.toUpperCase()+'\nTP'+(i+1)+' reached at $`'+fmt(tp)+'`  ·  Current price: $`'+p.toFixed(2)+'`');
+        }
+      }
+      if(!trades[idx].tpHit[i]) allHit=false;
+    });
+    if(allHit&&t.takeProfits.length>0){autoClose(id,p,'All TPs hit');return;}
+    // Only check SL if no TP has been hit yet
+    if(!t.finalHit&&!t.slHit&&(isL?p<=t.stoploss:p>=t.stoploss)){
+      trades[idx].slHit=true;
+      trades[idx].finalHit=true;
+      sendAlert('🔴 **STOP LOSS HIT** — '+t.pair+' '+t.direction.toUpperCase()+'\nStop loss hit at $`'+fmt(t.stoploss)+'`  ·  Current price: $`'+p.toFixed(2)+'`');
+      autoClose(id,p,'Stop loss hit');return;
+    }
+    save();refreshCard(id,p);
+  };
+  tick();
+  itvs[id]=setInterval(tick,1000);
+}
+
+function autoClose(id,p,reason){
+  var idx=trades.findIndex(function(t){return t.id===id});
+  if(idx===-1||trades[idx].closed) return;
+  clearInterval(itvs[id]);
+  var t=trades[idx], r=calcR(t,p);
+  trades[idx]=Object.assign({},t,{closed:true,closePrice:p,closeR:r,closeReason:reason,closeTime:new Date().toISOString()});
+  save();updBadge();renderTrades();renderLog();
+  sendAlert('⏹️ **TRADE CLOSED** — '+t.pair+' '+t.direction.toUpperCase()+'\nReason: '+reason+'\nClosing price: $`'+fmt(p)+'`\nResult: **'+(r>=0?'+':'')+r.toFixed(2)+'R**');
+}
+
+function calcR(t,cp){
+  var rpu=Math.abs(t.entry-t.stoploss); if(!rpu) return 0;
+  return(t.direction==='long'?cp-t.entry:t.entry-cp)/rpu;
+}
+
+function refreshCard(id,p){
+  var el=document.getElementById('lp-'+id); if(!el) return;
+  var t=trades.find(function(x){return x.id===id}); if(!t) return;
+  el.textContent='$'+p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:6});
+  if(t.tpHit) t.takeProfits.forEach(function(_,i){
+    var c=document.getElementById('tpc-'+id+'-'+i);
+    if(c&&t.tpHit[i]) c.classList.add('hit');
+  });
+}
+
+// ─── RENDER TRADES ───────────────────────────────────────
+function renderTrades(){
+  var list=document.getElementById('trades-list');
+  var active=trades.filter(function(t){return!t.closed});
+  if(!active.length){list.innerHTML='<div class="empty"><div class="ei">📭</div><p>No active trades.<br>Post your first signal via "Take Trade".</p></div>';return;}
+  list.innerHTML=active.map(cardHTML).join('');
+  active.forEach(async function(t){var p=await fetchPrice(t.pair);if(p)refreshCard(t.id,p);});
+}
+
+function cardHTML(t){
+  var isLimit = t.orderType === 'limit';
+  var isPending = isLimit && !t.entryHit;
+  var isLong = t.direction === 'long';
+  var entryEmoji = isPending ? '⏳' : '☑️';
+  var orderLabel = isLimit ? 'LIMIT' : 'MARKET';
+  var orderPillStyle = isLimit ? 'background:#f0f4ff;color:#4f6ef7;border:1px solid #c7d2fe' : 'background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)';
+  var statusPill = isPending
+    ? '<span class="pill" style="background:#fefce8;color:#854d0e;border:1px solid #fde68a">PENDING</span>'
+    : '<span class="pill plv">ACTIVE</span>';
+
+  // Status dot: hourglass when pending, green circle for active long, red for active short
+  var statusDot = isPending
+    ? '<span style="font-size:.75rem;margin-right:2px">⏳</span>'
+    : isLong
+      ? '<div class="live-dot" style="background:var(--green)"></div>'
+      : '<div class="live-dot" style="background:var(--red)"></div>';
+
+  // TP labels inline — with ✅ if hit, and entry ✅ marker
+  var entryHitMark = !isPending ? ' <span style="color:var(--green);font-size:.75rem">✅</span>' : '';
+  var tpItems = t.takeProfits.map(function(tp,i){
+    var hit = t.tpHit && t.tpHit[i];
+    return '<div class="lv-item"><span class="lv-lbl">TP'+(i+1)+'</span>'
+      +'<span class="lv-val" style="color:'+(hit?'var(--muted2)':'var(--green)')
+      +(hit?';text-decoration:line-through':'')+'">$'+fmt(tp)+(hit?' ✅':'')+'</span></div>';
+  }).join('');
+
+  // SL with ✅ if hit
+  var slHit = t.slHit || false;
+  var slVal = '<span class="lv-val sc" style="'+(slHit?'text-decoration:line-through;opacity:.6':'')+'">$'+fmt(t.stoploss)+(slHit?' ✅':'')+'</span>';
+
+  return '<div class="tc '+(isLong?'lb':'sb')+'" id="card-'+t.id+'">'
+    +'<div class="tc-head">'
+    +'<div class="tc-title" id="tc-title-'+t.id+'">'
+    +entryEmoji+' '+t.pair
+    +' <span class="pill '+(isLong?'pl':'ps')+'">'+t.direction.toUpperCase()+'</span>'
+    +' <span class="pill" style="'+orderPillStyle+'">'+orderLabel+'</span>'
+    +statusPill
+    +'</div>'
+    +'<div class="t-tag">👤 '+t.traderName+' · '+tago(t.timestamp)+'</div>'
+    +'</div>'
+    +'<div class="tc-lvls">'
+    +'<div class="lv-item"><span class="lv-lbl">Entry</span>'
+    +'<span class="lv-val" style="color:var(--text);font-weight:600">$'+fmt(t.entry)+entryHitMark+'</span></div>'
+    +'<div class="lv-item"><span class="lv-lbl">Stop Loss</span>'+slVal+'</div>'
+    +tpItems
+    +'</div>'
+    +(t.reason?'<div style="font-size:.78rem;color:var(--muted);padding:8px 12px;background:var(--bg);border-radius:var(--rs);margin-bottom:8px;border-left:2px solid var(--border2)">'+t.reason.substring(0,200)+(t.reason.length>200?'…':'')+'</div>':'')
+    +'<div class="tc-bot">'
+    +'<div class="live-row">'
+    +statusDot
+    +'<span style="color:var(--muted)">Live:</span>'
+    +'<span style="font-family:\'JetBrains Mono\',monospace;font-weight:600;color:var(--text)" id="lp-'+t.id+'">'+(t.lastPrice?'$'+fmt(t.lastPrice):'–')+'</span>'
+    +'<span class="pnl u" id="pnl-'+t.id+'">–</span>'
+    +'</div>'
+    +'<div class="tc-act">'
+    +'<button class="btn-edit" onclick="openEditModal(\''+t.id+'\')">✏️ Edit</button>'
+    +'<button class="btn-ct" onclick="openCM(\''+t.id+'\')">Close</button>'
+    +'</div></div></div>';
+}
+
+// ─── EDIT TRADE ──────────────────────────────────────────
+function openEditModal(id) {
+  editingId = id;
+  var t = trades.find(function(x){return x.id===id}); if(!t) return;
+  // Show entry field only for pending limit trades
+  var isPending = t.orderType === 'limit' && !t.entryHit;
+  var entryRow = document.getElementById('edit-entry-row');
+  entryRow.style.display = isPending ? 'flex' : 'none';
+  if(isPending) document.getElementById('edit-entry').value = t.entry;
+  document.getElementById('edit-sl').value = t.stoploss;
+  document.getElementById('edit-tp-list').innerHTML = '';
+  editTpN = 0;
+  t.takeProfits.forEach(function(tp){ addEditTP(tp); });
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingId = null;
+}
+
+async function confirmEdit() {
+  var idx = trades.findIndex(function(t){return t.id===editingId}); if(idx===-1) return;
+  var t = trades[idx];
+  var isPending = t.orderType === 'limit' && !t.entryHit;
+  var newEntry = isPending ? parseFloat(document.getElementById('edit-entry').value) : t.entry;
+  var newSL = parseFloat(document.getElementById('edit-sl').value);
+  var newTPs = getTPs('edit-tp-list');
+  if(isPending && (isNaN(newEntry)||newEntry<=0)){alert('Enter a valid entry price.');return;}
+  if(isNaN(newSL)||newSL<=0){alert('Enter a valid stop loss.');return;}
+  if(!newTPs.length){alert('Add at least one take profit.');return;}
+  if(t.direction==='long'&&newSL>=newEntry){alert('Stop loss must be below entry for a LONG trade.');return;}
+  if(t.direction==='short'&&newSL<=newEntry){alert('Stop loss must be above entry for a SHORT trade.');return;}
+  var badTP=newTPs.some(function(tp){return t.direction==='long'?tp<=newEntry:tp>=newEntry;});
+  if(badTP){alert(t.direction==='long'?'Take profits must be above entry.':'Take profits must be below entry.');return;}
+  if(JSON.stringify(newTPs)===JSON.stringify(t.takeProfits)&&newSL===t.stoploss&&newEntry===t.entry){closeEditModal();return;}
+
+  trades[idx] = Object.assign({},t,{entry:newEntry,stoploss:newSL,takeProfits:newTPs,tpHit:[]});
+  save();
+  closeEditModal();
+  renderTrades();
+
+  // Patch original Discord message
+  var updated = trades[idx];
+  if(updated.discordMsgId && updated.discordWHUrl) {
+    try {
+      await fetch(updated.discordWHUrl+'/messages/'+updated.discordMsgId, {
+        method: 'PATCH',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({content: buildMsg(updated)})
+      });
+    } catch{}
+  }
+}
+
+var closeModalItv = null;
+
+// ─── CLOSE TRADE ─────────────────────────────────────────
+function openCM(id){
+  closingId=id;
+  var t=trades.find(function(x){return x.id===id}); if(!t) return;
+  document.getElementById('ci-info').innerHTML=
+    '<div class="ci-row"><span>Pair</span><span>'+t.pair+'</span></div>'
+    +'<div class="ci-row"><span>Direction</span><span>'+t.direction.toUpperCase()+'</span></div>'
+    +'<div class="ci-row"><span>Entry</span><span>$'+fmt(t.entry)+'</span></div>'
+    +'<div class="ci-row"><span>Stop Loss</span><span>$'+fmt(t.stoploss)+'</span></div>'
+    +'<div class="ci-row"><span>Trader</span><span>'+t.traderName+'</span></div>';
+  document.getElementById('close-price').value='';
+  document.getElementById('cp-status').textContent='';
+  document.getElementById('close-modal').classList.add('open');
+  // Fetch immediately then every second
+  fetchClosePrice();
+  if(closeModalItv) clearInterval(closeModalItv);
+  closeModalItv = setInterval(fetchClosePrice, 1000);
+}
+
+async function fetchClosePrice(){
+  var t=trades.find(function(x){return x.id===closingId}); if(!t) return;
+  var s=document.getElementById('cp-status');
+  var p=await fetchPrice(t.pair);
+  if(p){
+    document.getElementById('close-price').value=p;
+    s.style.color='var(--green)';
+    s.textContent='✓ Live from Bybit: $'+p.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:6});
+  } else {
+    s.style.color='var(--red)';
+    s.textContent='⚠ Could not fetch price from Bybit';
+  }
+}
+
+function closeCM(){
+  if(closeModalItv){clearInterval(closeModalItv);closeModalItv=null;}
+  document.getElementById('close-modal').classList.remove('open');
+  closingId=null;
+}
+
+async function confirmClose(){
+  var cp=parseFloat(document.getElementById('close-price').value);
+  if(isNaN(cp)||cp<=0){
+    document.getElementById('cp-status').textContent='⚠ Could not fetch price. Please try again.';
+    document.getElementById('cp-status').style.color='var(--red)';
+    fetchClosePrice();
+    return;
+  }
+  var idx=trades.findIndex(function(t){return t.id===closingId}); if(idx===-1) return;
+  if(closeModalItv){clearInterval(closeModalItv);closeModalItv=null;}
+  clearInterval(itvs[closingId]);
+  var t=trades[idx], r=calcR(t,cp);
+  trades[idx]=Object.assign({},t,{closed:true,closePrice:cp,closeR:r,closeReason:'Manually closed',closeTime:new Date().toISOString()});
+  save();closeCM();updBadge();renderTrades();renderLog();
+  await sendAlert('⏹️ **TRADE CLOSED** — '+t.pair+' '+t.direction.toUpperCase()+'\nReason: Manually closed\nClosing price: $`'+fmt(cp)+'`\nResult: **'+(r>=0?'+':'')+r.toFixed(2)+'R**');
+}
+
+// ─── LOG ─────────────────────────────────────────────────
+function renderLog(){
+  var closed=trades.filter(function(t){return t.closed});
+  var el=document.getElementById('log-content');
+  if(!closed.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>No closed trades yet.</p></div>';return;}
+  var totR=closed.reduce(function(s,t){return s+(t.closeR||0)},0);
+  var wins=closed.filter(function(t){return(t.closeR||0)>0}).length;
+  el.innerHTML='<div class="stats">'
+    +'<div class="stat"><div class="stat-lbl">Total R</div><div class="stat-val" style="color:'+(totR>=0?'var(--green)':'var(--red)')+';">'+(totR>=0?'+':'')+totR.toFixed(2)+'R</div></div>'
+    +'<div class="stat"><div class="stat-lbl">Win Rate</div><div class="stat-val">'+(closed.length?Math.round(wins/closed.length*100):0)+'%</div></div>'
+    +'<div class="stat"><div class="stat-lbl">Trades</div><div class="stat-val">'+wins+'W / '+(closed.length-wins)+'L</div></div></div>'
+    +'<table class="log-tbl"><thead><tr><th>Pair</th><th>Dir</th><th>Entry</th><th>Close</th><th>Reason</th><th>R</th><th>Trader</th><th>Date</th></tr></thead><tbody>'
+    +closed.map(function(t){return'<tr>'
+      +'<td><strong>'+t.pair+'</strong></td>'
+      +'<td><span class="pill '+(t.direction==='long'?'pl':'ps')+'">'+t.direction.toUpperCase()+'</span></td>'
+      +'<td style="font-family:\'JetBrains Mono\',monospace">$'+fmt(t.entry)+'</td>'
+      +'<td style="font-family:\'JetBrains Mono\',monospace">$'+(t.closePrice?fmt(t.closePrice):'–')+'</td>'
+      +'<td style="color:var(--muted);font-size:.78rem">'+(t.closeReason||'–')+'</td>'
+      +'<td><span class="lr '+((t.closeR||0)>=0?'p':'n')+'">'+(((t.closeR||0)>=0)?'+':'')+((t.closeR||0)).toFixed(2)+'R</span></td>'
+      +'<td style="color:var(--muted)">'+(t.traderName||'–')+'</td>'
+      +'<td style="color:var(--muted2);font-size:.75rem">'+fmtD(t.closeTime||t.timestamp)+'</td>'
+      +'</tr>'}).join('')
+    +'</tbody></table>';
+}
+
+// ─── DISCORD ─────────────────────────────────────────────
+async function sendAlert(content){
+  var url=currentWH('updates'); if(!url) return;
+  try{await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:content})});}catch{}
+}
+
+// ─── SETTINGS ────────────────────────────────────────────
+function openSettings(){
+  var name=localStorage.getItem('ts_name')||'';
+  document.getElementById('wh-trades').value  = getWH(name,'trades')  || DEFAULT_WH_TRADES;
+  document.getElementById('wh-updates').value = getWH(name,'updates') || DEFAULT_WH_UPDATES;
+  var s=document.getElementById('wh-status');
+  var ok=getWH(name,'trades');
+  s.innerHTML=ok?'<div class="wh-saved-badge"><div class="wh-dot"></div>Webhooks configured</div>':'';
+  document.getElementById('settings-modal').classList.add('open');
+}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('open');}
+function saveWebhook(){
+  var wt=document.getElementById('wh-trades').value.trim();
+  var wu=document.getElementById('wh-updates').value.trim();
+  if(wt&&!wt.includes('discord.com/api/webhooks')){alert('Trades webhook does not look valid.');return;}
+  if(wu&&!wu.includes('discord.com/api/webhooks')){alert('Updates webhook does not look valid.');return;}
+  var name=localStorage.getItem('ts_name')||'';
+  setWH(name,'trades',  wt||DEFAULT_WH_TRADES);
+  setWH(name,'updates', wu||DEFAULT_WH_UPDATES);
+  closeSettings();
+  document.getElementById('wh-status').innerHTML='<div class="wh-saved-badge"><div class="wh-dot"></div>Webhooks saved</div>';
+}
+async function testWebhooks(){
+  var wt=document.getElementById('wh-trades').value.trim()||DEFAULT_WH_TRADES;
+  var wu=document.getElementById('wh-updates').value.trim()||DEFAULT_WH_UPDATES;
+  try{
+    var r1=await fetch(wt,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'✅ TradeSignal — **Trades** webhook test!'})});
+    var r2=await fetch(wu,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'✅ TradeSignal — **Updates** webhook test!'})});
+    alert((r1.ok||r1.status===204)&&(r2.ok||r2.status===204)?'✅ Both test messages sent!':'❌ One or both webhooks failed.');
+  }catch(ex){alert('❌ '+ex.message);}
+}
+
+// ─── TABS ────────────────────────────────────────────────
+function sw(tab){
+  ['new','active','log'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('tbtn-'+t).classList.toggle('active',t===tab);
+  });
+  if(tab==='active') renderTrades();
+  if(tab==='log') renderLog();
+}
+
+function updBadge(){
+  var n=trades.filter(function(t){return!t.closed}).length;
+  var b=document.getElementById('abadge');
+  b.textContent=n;b.style.display=n>0?'inline-block':'none';
+}
+
+// ─── HELPERS ─────────────────────────────────────────────
+function save(){localStorage.setItem('ts_trades',JSON.stringify(trades));}
+function setSt(m,t){var e=document.getElementById('smsg');e.textContent=m;e.className='stxt '+t;}
+function tago(iso){
+  var m=Math.floor((Date.now()-new Date(iso).getTime())/60000);
+  if(m<1)return'just now';if(m<60)return m+'m ago';
+  var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';
+}
+function fmtD(iso){
+  if(!iso)return'–';var d=new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ─── THEME ───────────────────────────────────────────────
+function toggleTheme() {
+  var isDark = document.documentElement.classList.toggle('dark');
+  document.getElementById('theme-btn').textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('ts_theme', isDark ? 'dark' : 'light');
+}
+
+function applyTheme() {
+  var saved = localStorage.getItem('ts_theme');
+  if (saved === 'dark') {
+    document.documentElement.classList.add('dark');
+    document.getElementById('theme-btn').textContent = '☀️';
+  }
+}
+
+init();
+applyTheme();
+</script>
+</body>
+</html>
